@@ -1,7 +1,9 @@
 package com.reading.reading.model.book;
 
+import com.reading.reading.api.response.book.BookStockDTO;
 import lombok.Data;
 import org.hibernate.envers.Audited;
+import org.modelmapper.ModelMapper;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -23,5 +25,9 @@ public class BookStock {
 
     @Min(0)
     private int quantity;
+
+    public BookStockDTO toDTO() {
+        return new ModelMapper().map(this, BookStockDTO.class);
+    }
 
 }

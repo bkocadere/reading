@@ -18,6 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -48,6 +50,17 @@ public class OrderServiceImpl implements OrderService {
         return orderBookRepository.saveAll(orderBook);
     }
 
+    @Override
+    public OrderBook findOneById(Long id) {
+        return orderBookRepository.findById(id).orElseThrow();
+    }
+
+    @Override
+    public List<OrderBook> findByDateInterval(LocalDate startDate, LocalDate endDate) {
+        return orderBookRepository.findByOperatingDateBetween(startDate, endDate);
+    }
+
+
     private List<OrderBook> prepareOrderBookList(AddOrderBookRequest request) {
         checkUniqueBookId(request.getBasketBookList());
         String reference = UUID.randomUUID().toString();
@@ -68,6 +81,8 @@ public class OrderServiceImpl implements OrderService {
         orderBook.setAmount(orderBook.getBook().getAmount());
         orderBook.setCustomer(checkCustomer(request.getCustomerId()));
         orderBook.setBasketReference(reference);
+        orderBook.setExecutionDate(OffsetDateTime.now());
+        orderBook.setOperatingDate(LocalDate.now());
         return orderBook;
     }
 

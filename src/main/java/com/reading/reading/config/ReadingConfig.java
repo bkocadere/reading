@@ -11,4 +11,5 @@ public class ReadingConfig {
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
     }
+
 }

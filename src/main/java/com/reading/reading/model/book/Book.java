@@ -1,7 +1,9 @@
 package com.reading.reading.model.book;
 
+import com.reading.reading.api.response.book.BookDTO;
 import lombok.Data;
 import org.hibernate.envers.Audited;
+import org.modelmapper.ModelMapper;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,8 +29,9 @@ public class Book {
     @NotNull
     private BigDecimal amount;
 
-    /*@OneToOne
-    @JoinColumn(name = "book_stock_id")
-    private BookStock bookStock;*/
+    public BookDTO toDTO() {
+        return new ModelMapper().map(this, BookDTO.class);
+    }
+
 
 }

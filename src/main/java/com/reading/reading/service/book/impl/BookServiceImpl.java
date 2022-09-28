@@ -1,6 +1,7 @@
 package com.reading.reading.service.book.impl;
 
 import com.reading.reading.api.request.AddBookRequest;
+import com.reading.reading.api.request.UpdateBookRequest;
 import com.reading.reading.model.book.Book;
 import com.reading.reading.model.book.BookStock;
 import com.reading.reading.repository.book.BookRepository;
@@ -9,6 +10,7 @@ import com.reading.reading.service.book.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.UUID;
 
 @Service
@@ -23,6 +25,17 @@ public class BookServiceImpl implements BookService {
         BookStock bookStock = prepareBookStock(book, request);
 
         bookStockRepository.save(bookStock);
+        return book;
+    }
+
+    @Override
+    @Transactional
+    public Book update(Long id, UpdateBookRequest request) {
+        Book book = bookRepository.findById(id).orElseThrow();
+
+        BookStock bookStock = bookStockRepository.findByBookId(book.getId()).orElseThrow(); // Locked
+
+        bookStock.setQuantity(request.getQuantity());
         return book;
     }
 
