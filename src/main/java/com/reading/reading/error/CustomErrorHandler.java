@@ -6,14 +6,15 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.validation.ConstraintViolationException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -26,7 +27,6 @@ public class CustomErrorHandler extends ResponseEntityExceptionHandler {
         log.error(ex.getMessage(), ex);
         ApiError apiError = prepareViolationResponse(ex);
         return handleExceptionInternal(ex, apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
-        //return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
 
@@ -34,19 +34,24 @@ public class CustomErrorHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex, WebRequest request) {
 
         log.error(ex.getMessage(), ex);
-        //ApiError apiError = prepareViolationResponse(ex);
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), ex.getMessage());
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
-    /*@ExceptionHandler({Exception.class})
-    public ResponseEntity<Object> handleGeneral(Exception ex, WebRequest request) {
+    @ExceptionHandler({NoSuchElementException.class})
+    public ResponseEntity<Object> handleDNoSuchElement(NoSuchElementException ex, WebRequest request) {
 
         log.error(ex.getMessage(), ex);
-        //ApiError apiError = prepareViolationResponse(ex);
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), ex.getMessage());
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+    public ResponseEntity<Object> missingServletRequestParam(MissingServletRequestParameterException ex) {
+
+        log.error(ex.getMessage(), ex);
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), ex.getMessage());
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
-    }*/
+    }
 
     public ApiError prepareViolationResponse(ConstraintViolationException exception) {
         List<String> errors = exception.getConstraintViolations().stream().map(violation -> violation.getRootBeanClass().getName() + " " + violation.getPropertyPath() + ": " + violation.getMessage()).collect(Collectors.toList());

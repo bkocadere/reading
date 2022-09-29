@@ -20,6 +20,7 @@ public class BookServiceImpl implements BookService {
     private final BookStockRepository bookStockRepository;
 
     @Override
+    @Transactional
     public Book add(AddBookRequest request) {
         Book book = prepareBook(request);
         BookStock bookStock = prepareBookStock(book, request);

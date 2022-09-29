@@ -23,13 +23,13 @@ public class StatisticServiceImpl implements StatisticService {
     @Override
     public List<StatisticResponseDTO> generate(Long customerId, LocalDate fromDate) {
         List<StatisticQueryDTO> statisticQueryDTOS = orderBookRepository.findByCustomerAndStatistics(customerId, fromDate);
-        Map<YearMonth, Map<StatisticQueryDTO, Integer>> mapx =
+        Map<YearMonth, Map<StatisticQueryDTO, Integer>> map =
                 statisticQueryDTOS.stream()
                         .collect(Collectors.groupingBy(e -> YearMonth.from(e.getOperatingDate()), TreeMap::new,
                                 Collectors.groupingBy(x -> x, Collectors.summingInt(StatisticQueryDTO::getTotalQuantity)))
                         );
 
-        return mapx.entrySet().stream().map(x -> {
+        return map.entrySet().stream().map(x -> {
             BigDecimal totalAmount = x.getValue().keySet().stream().
                     map(StatisticQueryDTO::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
             int totalQuantity = x.getValue().values().stream().mapToInt(integer -> integer).sum();

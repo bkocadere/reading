@@ -47,7 +47,8 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public List<OrderBook> add(AddOrderBookRequest request) {
         List<OrderBook> orderBook = prepareOrderBookList(request);
-        return orderBookRepository.saveAll(orderBook);
+        orderBookRepository.saveAll(orderBook);
+        return orderBook;
     }
 
     @Override

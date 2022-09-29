@@ -26,6 +26,11 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.save(customer);
     }
 
+    @Override
+    public Customer getByPhone(String phone) {
+        return customerRepository.findOneByPhone(phone).orElseThrow();
+    }
+
     private Customer prepareCustomer(AddCustomerRequest request) {
         Customer customer = new Customer();
         customer.setPassword(passwordEncoder.encode(request.getPassword()));
